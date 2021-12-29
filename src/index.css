@@ -1,13 +1,229 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+:root {
+  --text-color: #232323;
+  --text-color--placeholder: #8a888f;
+  --success-color: #18d165;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+* {
+  font-family: "Avenir", Arial, Helvetica, sans-serif;
+  color: var(--text-color);
+  font-size: 18px;
+  box-sizing: border-box;
+}
+
+p {
+  margin: 0;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+#App {
+  width: 100%;
+  max-width: 400px;
+  padding: 15px;
+  margin: auto;
+}
+
+header.Header1 {
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.List__Complete {
+  height: 0;
+  opacity: 0;
+  animation-duration: 500ms;
+  animation-fill-mode: forwards;
+  animation-delay: 1.5s;
+  animation-name: List__Complete__FadeIn;
+}
+
+@keyframes List__Complete__FadeIn {
+  to {
+    height: 24px;
+    opacity: 1;
+  }
+}
+
+.List__ItemWrapper {
+  margin-top: 15px;
+  display: flex;
+  width: 100%;
+}
+
+.List__Item {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  border-radius: 8px;
+  box-shadow: 0px 0px 5px 0px rgba(32, 32, 32, 0.2);
+  padding: 15px;
+  overflow: hidden;
+  height: 0;
+  opacity: 0;
+  animation-duration: 250ms;
+  animation-fill-mode: forwards;
+  animation-name: List__Item__FadeIn;
+}
+
+@keyframes List__Item__FadeIn {
+  to {
+    height: 60px;
+    opacity: 1;
+  }
+}
+
+.List__Item__Emoji {
+  margin-right: 15px;
+  line-height: 27px;
+  font-size: 22px;
+  margin-top: 2px;
+}
+
+.List__Item__Text {
+  flex: 1;
+}
+
+.List__Item__Input {
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  border: none;
+  outline: none;
+  text-align: right;
+  width: 50px;
+}
+
+.List__Item__Input::placeholder {
+  color: var(--text-color--placeholder);
+  opacity: 1;
+}
+
+.List__Item__InputPostfix::before {
+  content: "\00a0";
+}
+
+.List__Item__Input:placeholder-shown + .List__Item__InputPostfix {
+  color: var(--text-color--placeholder);
+}
+
+.List__Item__Submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  background-color: var(--success-color);
+  border-radius: 8px;
+  border: 0;
+  padding: 0;
+  width: 0;
+  animation-duration: 500ms;
+  animation-fill-mode: forwards;
+}
+
+.List__Item__Submit.List__Item__Submit--show {
+  animation-name: List__Item_Submit--show;
+}
+
+.List__Item__Submit.List__Item__Submit--hide {
+  animation-name: List__Item_Submit--hide;
+}
+
+@keyframes List__Item_Submit--show {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 60px;
+    margin-left: 15px;
+  }
+}
+
+@keyframes List__Item_Submit--hide {
+  from {
+    width: 60px;
+    margin-left: 15px;
+  }
+
+  to {
+    width: 0;
+  }
+}
+
+.List__Item__CompletedBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: absolute;
+  padding: 15px;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 100%;
+  background-color: var(--success-color);
+  animation-duration: 750ms;
+  animation-fill-mode: forwards;
+  animation-name: List__Item__CompletedBanner--show;
+}
+
+@keyframes List__Item__CompletedBanner--show {
+  to {
+    right: 0;
+  }
+}
+
+.List__Item__CompletedBanner * {
+  color: white;
+}
+
+.List__Item__CompletedBanner__Text {
+  font-style: italic;
+  opacity: 0;
+  animation-delay: 750ms;
+  animation-duration: 250ms;
+  animation-fill-mode: forwards;
+  animation-name: List__Item__CompletedBanner--fade-in;
+}
+
+.List__Item__CompletedBanner__Time {
+  opacity: 0;
+  animation-delay: 1050ms;
+  animation-duration: 250ms;
+  animation-fill-mode: forwards;
+  animation-name: List__Item__CompletedBanner--fade-in;
+}
+
+@keyframes List__Item__CompletedBanner--fade-in {
+  to {
+    opacity: 1;
+  }
+}
+
+.List__Item__Border {
+  height: 60px;
+  width: 10px;
+  margin-left: -15px;
+  margin-right: 15px;
+}
+
+.List__Create {
+  margin-top: 15px;
+  display: flex;
+}
+
+.List__Create__InputLabel {
+  color: var(--text-color--placeholder);
+  white-space: nowrap;
+}
+
+.List__Create__Input {
+  flex-grow: 1;
+  appearance: none;
+  border: none;
+  outline: none;
+  text-align: right;
 }
