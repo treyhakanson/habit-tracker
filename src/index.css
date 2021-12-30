@@ -3,7 +3,7 @@
   --text-color: #232323;
   --text-color--placeholder: #8a888f;
   --success-color: #18d165;
-  --negative-color: #d11875;
+  --negative-color: #e4311a;
 }
 
 * {
@@ -86,6 +86,7 @@ body {
   animation-duration: 250ms;
   animation-fill-mode: forwards;
   animation-name: List__Item__FadeIn;
+  transition: all 250ms;
 }
 
 @keyframes List__Item__FadeIn {
@@ -104,6 +105,9 @@ body {
 
 .List__Item__Text {
   flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .List__Item__Input {
@@ -128,7 +132,7 @@ body {
   color: var(--text-color--placeholder);
 }
 
-.List__Item__Submit--delete {
+.List__Item__Action--delete {
   background-color: var(--negative-color);
 }
 
@@ -145,8 +149,7 @@ body {
   border: 0;
   padding: 0;
   width: 0;
-  animation-duration: 500ms;
-  animation-fill-mode: forwards;
+  transition: width 500ms, margin-left 100ms, margin-right 100ms;
 }
 
 .List__Item__Action:hover {
@@ -154,33 +157,27 @@ body {
 }
 
 .List__Item__Action.List__Item__Action--show {
-  animation-name: List__Item__Action--show;
+  width: 60px;
+}
+
+.List__Item__Action.List__Item__Action--submit.List__Item__Action--show {
+  margin-left: 15px;
+}
+
+.List__Item__Action.List__Item__Action--delete.List__Item__Action--show {
+  margin-right: 15px;
 }
 
 .List__Item__Action.List__Item__Action--hide {
-  animation-name: List__Item__Action--hide;
+  width: 0;
 }
 
-@keyframes List__Item__Action--show {
-  from {
-    width: 0;
-  }
-
-  to {
-    width: 60px;
-    margin-left: 15px;
-  }
+.List__Item__Action.List__Item__Action--submit.List__Item__Action--hide {
+  margin-left: 0;
 }
 
-@keyframes List__Item__Action--hide {
-  from {
-    width: 60px;
-    margin-left: 15px;
-  }
-
-  to {
-    width: 0;
-  }
+.List__Item__Action.List__Item__Action--delete.List__Item__Action--hide {
+  margin-right: 0;
 }
 
 .List__Item__CompletedBanner {
@@ -211,6 +208,9 @@ body {
 
 .List__Item__CompletedBanner__Text {
   font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   opacity: 0;
   animation-delay: 750ms;
   animation-duration: 250ms;
@@ -219,6 +219,7 @@ body {
 }
 
 .List__Item__CompletedBanner__Time {
+  white-space: nowrap;
   opacity: 0;
   animation-delay: 1050ms;
   animation-duration: 250ms;
@@ -245,7 +246,6 @@ body {
 }
 
 .List__Create__InputLabel {
-  color: var(--text-color--placeholder);
   white-space: nowrap;
 }
 

@@ -82,7 +82,7 @@ export function List() {
             <button
               className="IconButton"
               type="button"
-              onClick={() => setDeleting(true)}
+              onClick={() => setDeleting(!deleting)}
             >
               <Trash2 color="var(--icon--primary)" size={18} />
             </button>
@@ -96,6 +96,7 @@ export function List() {
             key={i}
             name={item.text.toLowerCase().replaceAll(/\s/g, "_")}
             onComplete={onCompleteItem}
+            deleting={deleting}
             {...item}
           />
         ))}

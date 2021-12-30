@@ -1,18 +1,12 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { colorBandsForEmoji } from "./color-utils";
-import { Check } from "react-feather";
+import { Check, X } from "react-feather";
 import { Item } from "./CreateListItem";
 
 interface Props extends Item {
   name: string;
+  deleting: boolean;
   onComplete: (text: string, date: string, minutes: string) => void;
-}
-
-enum ItemStatus {
-  Initial = "Initial",
-  Completed = "Completed",
-  ActionsShown = "ActionsShown",
-  ActionsHidden = "ActionsHidden",
 }
 
 export function ListItem({
@@ -21,45 +15,50 @@ export function ListItem({
   text,
   lastCompletion,
   onComplete,
+  deleting,
 }: Props) {
-  let initialStatus = ItemStatus.ActionsHidden;
+  let initialCompleted = false;
   if (lastCompletion != null) {
     const lastCompletedDt = new Date(lastCompletion.date);
-    initialStatus =
-      lastCompletedDt.toDateString() === new Date().toDateString()
-        ? ItemStatus.Completed
-        : ItemStatus.ActionsHidden;
+    initialCompleted =
+      lastCompletedDt.toDateString() === new Date().toDateString();
   }
 
   const [minutes, setMinutes] = useState(lastCompletion?.minutes ?? "");
-  const [prevStatus, setPrevStatus] = useState(ItemStatus.Initial);
-  const [status, setStatus] = useState<ItemStatus>(initialStatus);
-  const completed = status === ItemStatus.Completed;
+  const [completed, setCompleted] = useState(initialCompleted);
+  const [
+    { prev: prevRightActionsShown, current: rightActionsShown },
+    setRightActionsShown,
+  ] = useState({ prev: false, current: false });
+  const [
+    { prev: prevLeftActionsShown, current: leftActionsShown },
+    setLeftActionsShown,
+  ] = useState({ prev: false, current: false });
 
-  const animationClass = useMemo(() => {
-    if (prevStatus === ItemStatus.Initial) {
-      return "";
+  useEffect(() => {
+    if (deleting) {
+      setLeftActionsShown({ prev: false, current: true });
+      setRightActionsShown({ prev: rightActionsShown, current: false });
+    } else {
+      setLeftActionsShown({ prev: true, current: false });
+      setRightActionsShown({
+        prev: false,
+        current: !completed && minutes !== "",
+      });
     }
-    switch (status) {
-      case ItemStatus.ActionsHidden:
-      case ItemStatus.Completed:
-        return "List__Item__Action--hide";
-      case ItemStatus.ActionsShown:
-        return "List__Item__Action--show";
-    }
-  }, [prevStatus, status]);
+  }, [deleting, rightActionsShown]);
 
   const completeItem = useCallback(() => {
     const dt = new Date().toISOString();
-    setPrevStatus(status);
-    setStatus(ItemStatus.Completed);
+    setCompleted(true);
+    setRightActionsShown({ prev: rightActionsShown, current: false });
 
     const entries = JSON.parse(localStorage.getItem("entries") ?? "[]");
     entries.push([dt, name, minutes]);
     localStorage.setItem("entries", JSON.stringify(entries));
 
     onComplete(text, dt, minutes);
-  }, [name, text, minutes, status, onComplete]);
+  }, [name, text, minutes, rightActionsShown, onComplete]);
 
   const onKeyPress = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -75,14 +74,12 @@ export function ListItem({
   const onChangeMinutes = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setMinutes(e.target.value);
-      setPrevStatus(status);
-      setStatus(
-        e.target.value === ""
-          ? ItemStatus.ActionsHidden
-          : ItemStatus.ActionsShown
-      );
+      setRightActionsShown({
+        prev: rightActionsShown,
+        current: e.target.value !== "",
+      });
     },
-    [status]
+    [rightActionsShown]
   );
 
   const emojiGradient = useMemo(() => {
@@ -92,8 +89,29 @@ export function ListItem({
 
   const minutesPostfix = parseInt(minutes, 10) > 1 ? "mins" : "min";
 
+  let rightActionsAnimationClass = "";
+  if (prevRightActionsShown !== rightActionsShown) {
+    rightActionsAnimationClass = rightActionsShown
+      ? "List__Item__Action--show"
+      : "List__Item__Action--hide";
+  }
+
+  let leftActionsAnimationClass = "";
+  if (prevLeftActionsShown !== leftActionsShown) {
+    leftActionsAnimationClass = leftActionsShown
+      ? "List__Item__Action--show"
+      : "List__Item__Action--hide";
+  }
+
   return (
     <div className="List__ItemWrapper">
+      <button
+        type="button"
+        className={`List__Item__Action List__Item__Action--delete ${leftActionsAnimationClass}`}
+        onClick={() => alert("Deleting")}
+      >
+        <X color="white" />
+      </button>
       <div className={`List__Item ${completed ? "List__Item--completed" : ""}`}>
         <div
           className="List__Item__Border"
@@ -120,6 +138,7 @@ export function ListItem({
           value={minutes}
           onChange={onChangeMinutes}
           onKeyPress={onKeyPress}
+          maxLength={4}
         />
         <label
           htmlFor={`${name}__minutes`}
@@ -130,7 +149,7 @@ export function ListItem({
       </div>
       <button
         type="button"
-        className={`List__Item__Action List__Item__Action--submit ${animationClass}`}
+        className={`List__Item__Action List__Item__Action--submit ${rightActionsAnimationClass}`}
         onClick={() => completeItem()}
       >
         <Check color="white" />
