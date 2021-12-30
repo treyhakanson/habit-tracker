@@ -1,16 +1,24 @@
 import { useCallback, useMemo, useState, useEffect } from "react";
+import { Sliders, Trash2 } from "react-feather";
 import { CreateListItem, Item } from "./CreateListItem";
 import { exlpodeEmoji } from "./exploder";
 import { ListItem } from "./ListItem";
+import { Menu } from "./Menu";
 
 export function List() {
   const localItems = JSON.parse(
     localStorage.getItem("items") || "[]"
   ) as Array<Item>;
   const [items, setItems] = useState<Array<Item>>(localItems);
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const addItem = useCallback(
     (item: Item) => {
+      if (items.findIndex((other) => other.text === item.text) !== -1) {
+        alert("You already have this item in your list.");
+        return;
+      }
       const nextItems = [...items, item];
       localStorage.setItem("items", JSON.stringify(nextItems));
       setItems(nextItems);
@@ -41,7 +49,7 @@ export function List() {
       const lastCompletedDt = new Date(item.lastCompletion.date);
       return lastCompletedDt.toDateString() !== new Date().toDateString();
     });
-    return incomplete.length === 0;
+    return items.length > 0 && incomplete.length === 0;
   }, [items]);
 
   useEffect(() => {
@@ -59,20 +67,41 @@ export function List() {
   }, [allComplete]);
 
   return (
-    <div className="List">
-      <header className="Header1">Habit Tracker</header>
-      {allComplete && (
-        <p className="List__Complete">All tasks completed for today 🎉</p>
-      )}
-      {items.map((item, i) => (
-        <ListItem
-          key={i}
-          name={item.text.toLowerCase().replaceAll(/\s/g, "_")}
-          {...item}
-          onComplete={onCompleteItem}
-        />
-      ))}
-      <CreateListItem onCreate={addItem} />
-    </div>
+    <>
+      <div className="List">
+        <div className="List__Header">
+          <h2>Habit Tracker</h2>
+          <div className="List__Actions">
+            <button
+              className="IconButton"
+              type="button"
+              onClick={() => setMenuVisible(true)}
+            >
+              <Sliders color="var(--icon--primary)" size={18} />
+            </button>
+            <button
+              className="IconButton"
+              type="button"
+              onClick={() => setDeleting(true)}
+            >
+              <Trash2 color="var(--icon--primary)" size={18} />
+            </button>
+          </div>
+        </div>
+        {allComplete && (
+          <p className="List__Complete">All tasks completed for today 🎉</p>
+        )}
+        {items.map((item, i) => (
+          <ListItem
+            key={i}
+            name={item.text.toLowerCase().replaceAll(/\s/g, "_")}
+            onComplete={onCompleteItem}
+            {...item}
+          />
+        ))}
+        <CreateListItem onCreate={addItem} />
+      </div>
+      <Menu visible={menuVisible} onHide={() => setMenuVisible(false)} />
+    </>
   );
 }

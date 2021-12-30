@@ -8,6 +8,13 @@ interface Props extends Item {
   onComplete: (text: string, date: string, minutes: string) => void;
 }
 
+enum ItemStatus {
+  Initial = "Initial",
+  Completed = "Completed",
+  ActionsShown = "ActionsShown",
+  ActionsHidden = "ActionsHidden",
+}
+
 export function ListItem({
   name,
   emoji,
@@ -15,36 +22,44 @@ export function ListItem({
   lastCompletion,
   onComplete,
 }: Props) {
-  let initialCompleted = false;
+  let initialStatus = ItemStatus.ActionsHidden;
   if (lastCompletion != null) {
     const lastCompletedDt = new Date(lastCompletion.date);
-    initialCompleted =
-      lastCompletedDt.toDateString() === new Date().toDateString();
+    initialStatus =
+      lastCompletedDt.toDateString() === new Date().toDateString()
+        ? ItemStatus.Completed
+        : ItemStatus.ActionsHidden;
   }
 
-  const [completed, setCompleted] = useState(initialCompleted);
-  const [prevMinutes, setPrevMinutes] = useState("");
   const [minutes, setMinutes] = useState(lastCompletion?.minutes ?? "");
+  const [prevStatus, setPrevStatus] = useState(ItemStatus.Initial);
+  const [status, setStatus] = useState<ItemStatus>(initialStatus);
+  const completed = status === ItemStatus.Completed;
 
-  let animationClass = "";
-  if (minutes !== prevMinutes || completed) {
-    if (minutes === "" || completed) {
-      animationClass = "List__Item__Submit--hide";
-    } else {
-      animationClass = "List__Item__Submit--show";
+  const animationClass = useMemo(() => {
+    if (prevStatus === ItemStatus.Initial) {
+      return "";
     }
-  }
+    switch (status) {
+      case ItemStatus.ActionsHidden:
+      case ItemStatus.Completed:
+        return "List__Item__Action--hide";
+      case ItemStatus.ActionsShown:
+        return "List__Item__Action--show";
+    }
+  }, [prevStatus, status]);
 
   const completeItem = useCallback(() => {
     const dt = new Date().toISOString();
-    setCompleted(true);
+    setPrevStatus(status);
+    setStatus(ItemStatus.Completed);
 
     const entries = JSON.parse(localStorage.getItem("entries") ?? "[]");
     entries.push([dt, name, minutes]);
     localStorage.setItem("entries", JSON.stringify(entries));
 
     onComplete(text, dt, minutes);
-  }, [name, text, minutes, onComplete]);
+  }, [name, text, minutes, status, onComplete]);
 
   const onKeyPress = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -55,6 +70,19 @@ export function ListItem({
       completeItem();
     },
     [minutes, completeItem]
+  );
+
+  const onChangeMinutes = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setMinutes(e.target.value);
+      setPrevStatus(status);
+      setStatus(
+        e.target.value === ""
+          ? ItemStatus.ActionsHidden
+          : ItemStatus.ActionsShown
+      );
+    },
+    [status]
   );
 
   const emojiGradient = useMemo(() => {
@@ -90,10 +118,7 @@ export function ListItem({
           type="number"
           placeholder="0"
           value={minutes}
-          onChange={(e) => {
-            setPrevMinutes(minutes);
-            setMinutes(e.target.value);
-          }}
+          onChange={onChangeMinutes}
           onKeyPress={onKeyPress}
         />
         <label
@@ -105,7 +130,7 @@ export function ListItem({
       </div>
       <button
         type="button"
-        className={`List__Item__Submit ${animationClass}`}
+        className={`List__Item__Action List__Item__Action--submit ${animationClass}`}
         onClick={() => completeItem()}
       >
         <Check color="white" />

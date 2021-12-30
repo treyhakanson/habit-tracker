@@ -1,7 +1,9 @@
 :root {
+  --icon--primary: #3c3d42;
   --text-color: #232323;
   --text-color--placeholder: #8a888f;
   --success-color: #18d165;
+  --negative-color: #d11875;
 }
 
 * {
@@ -11,7 +13,8 @@
   box-sizing: border-box;
 }
 
-p {
+p,
+h2 {
   margin: 0;
 }
 
@@ -27,9 +30,24 @@ body {
   margin: auto;
 }
 
-header.Header1 {
+.List__Header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-weight: bold;
   font-size: 24px;
+}
+
+.IconButton {
+  border: 0;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.IconButton:hover {
+  cursor: pointer;
 }
 
 .List__Complete {
@@ -110,12 +128,19 @@ header.Header1 {
   color: var(--text-color--placeholder);
 }
 
-.List__Item__Submit {
+.List__Item__Submit--delete {
+  background-color: var(--negative-color);
+}
+
+.List__Item__Action--submit {
+  background-color: var(--success-color);
+}
+
+.List__Item__Action {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 60px;
-  background-color: var(--success-color);
   border-radius: 8px;
   border: 0;
   padding: 0;
@@ -124,15 +149,19 @@ header.Header1 {
   animation-fill-mode: forwards;
 }
 
-.List__Item__Submit.List__Item__Submit--show {
-  animation-name: List__Item_Submit--show;
+.List__Item__Action:hover {
+  cursor: pointer;
 }
 
-.List__Item__Submit.List__Item__Submit--hide {
-  animation-name: List__Item_Submit--hide;
+.List__Item__Action.List__Item__Action--show {
+  animation-name: List__Item__Action--show;
 }
 
-@keyframes List__Item_Submit--show {
+.List__Item__Action.List__Item__Action--hide {
+  animation-name: List__Item__Action--hide;
+}
+
+@keyframes List__Item__Action--show {
   from {
     width: 0;
   }
@@ -143,7 +172,7 @@ header.Header1 {
   }
 }
 
-@keyframes List__Item_Submit--hide {
+@keyframes List__Item__Action--hide {
   from {
     width: 60px;
     margin-left: 15px;
@@ -226,4 +255,59 @@ header.Header1 {
   border: none;
   outline: none;
   text-align: right;
+}
+
+.MenuWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  animation-duration: 300ms;
+  animation-name: Menu--fade-in;
+  animation-fill-mode: forwards;
+}
+
+.MenuWrapper.MenuWrapper__FadeOut {
+  animation-name: Menu--fade-out;
+}
+
+.Menu {
+  width: 100%;
+  max-width: 400px;
+  padding: 15px;
+  margin: auto;
+}
+
+.Menu__Header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@keyframes Menu--fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes Menu--fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.List__Actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
 }
