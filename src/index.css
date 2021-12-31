@@ -70,6 +70,8 @@ body {
   margin-top: 15px;
   display: flex;
   width: 100%;
+  animation-duration: 250ms;
+  animation-fill-mode: forwards;
 }
 
 .List__Item {
@@ -93,6 +95,37 @@ body {
   to {
     height: 60px;
     opacity: 1;
+  }
+}
+
+.List__Item.List__Item--deleted {
+  animation-name: List__Item__FadeOut;
+}
+
+.List__ItemWrapper--deleted {
+  animation-name: List__ItemWrapper__FadeOut;
+}
+
+@keyframes List__ItemWrapper__FadeOut {
+  from {
+    height: 60px;
+    opacity: 1;
+  }
+  to {
+    height: 0px;
+    opacity: 0;
+    margin-top: 0;
+  }
+}
+
+@keyframes List__Item__FadeOut {
+  from {
+    height: 60px;
+    opacity: 1;
+  }
+  to {
+    height: 0px;
+    opacity: 0;
   }
 }
 
@@ -149,7 +182,7 @@ body {
   border: 0;
   padding: 0;
   width: 0;
-  transition: width 500ms, margin-left 100ms, margin-right 100ms;
+  transition: width 250ms, margin-left 500ms, margin-right 500ms;
 }
 
 .List__Item__Action:hover {
@@ -310,4 +343,31 @@ body {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 5px;
+}
+
+.List__DeleteAction {
+  background-color: rgba(0, 0, 0, 0);
+  transition: all 250ms;
+  border-radius: 4px;
+}
+
+.List__DeleteAction.List__DeleteAction--active svg {
+  stroke: white;
+}
+
+.List__DeleteAction--active {
+  background-color: var(--icon--primary);
+}
+
+.List__DeleteAction__Text {
+  color: white;
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 250ms;
+}
+
+.List__DeleteAction__Text--active {
+  width: 50px;
+  opacity: 1;
 }

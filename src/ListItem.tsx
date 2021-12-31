@@ -7,24 +7,29 @@ interface Props extends Item {
   name: string;
   deleting: boolean;
   onComplete: (text: string, date: string, minutes: string) => void;
+  onDelete: (text: string) => void;
 }
 
 export function ListItem({
-  name,
   emoji,
   text,
   lastCompletion,
+  name,
   onComplete,
+  onDelete,
   deleting,
 }: Props) {
   let initialCompleted = false;
+  let initialMinutes = "";
   if (lastCompletion != null) {
     const lastCompletedDt = new Date(lastCompletion.date);
     initialCompleted =
       lastCompletedDt.toDateString() === new Date().toDateString();
+    initialMinutes = initialCompleted ? lastCompletion.minutes : "";
   }
 
-  const [minutes, setMinutes] = useState(lastCompletion?.minutes ?? "");
+  const [deleted, setDeleted] = useState(false);
+  const [minutes, setMinutes] = useState(initialMinutes);
   const [completed, setCompleted] = useState(initialCompleted);
   const [
     { prev: prevRightActionsShown, current: rightActionsShown },
@@ -46,7 +51,7 @@ export function ListItem({
         current: !completed && minutes !== "",
       });
     }
-  }, [deleting, rightActionsShown]);
+  }, [deleting, rightActionsShown, completed, minutes]);
 
   const completeItem = useCallback(() => {
     const dt = new Date().toISOString();
@@ -75,11 +80,11 @@ export function ListItem({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setMinutes(e.target.value);
       setRightActionsShown({
-        prev: rightActionsShown,
+        prev: e.target.value === "",
         current: e.target.value !== "",
       });
     },
-    [rightActionsShown]
+    []
   );
 
   const emojiGradient = useMemo(() => {
@@ -97,22 +102,39 @@ export function ListItem({
   }
 
   let leftActionsAnimationClass = "";
-  if (prevLeftActionsShown !== leftActionsShown) {
-    leftActionsAnimationClass = leftActionsShown
-      ? "List__Item__Action--show"
-      : "List__Item__Action--hide";
+  if (deleted || prevLeftActionsShown !== leftActionsShown) {
+    leftActionsAnimationClass =
+      !deleted && leftActionsShown
+        ? "List__Item__Action--show"
+        : "List__Item__Action--hide";
   }
 
   return (
-    <div className="List__ItemWrapper">
+    <div
+      className={`List__ItemWrapper ${
+        deleted ? "List__ItemWrapper--deleted" : ""
+      }`}
+      onAnimationEnd={(e) => {
+        if (e.animationName === "List__ItemWrapper__FadeOut") {
+          onDelete(text);
+        }
+      }}
+    >
       <button
+        tabIndex={leftActionsShown ? 0 : -1}
         type="button"
         className={`List__Item__Action List__Item__Action--delete ${leftActionsAnimationClass}`}
-        onClick={() => alert("Deleting")}
+        onClick={() => {
+          setDeleted(true);
+        }}
       >
         <X color="white" />
       </button>
-      <div className={`List__Item ${completed ? "List__Item--completed" : ""}`}>
+      <div
+        className={`List__Item ${completed ? "List__Item--completed" : ""} ${
+          deleted ? "List__Item--deleted" : ""
+        }`}
+      >
         <div
           className="List__Item__Border"
           style={{ background: emojiGradient }}
@@ -130,6 +152,7 @@ export function ListItem({
         <p className="List__Item__Emoji">{emoji}</p>
         <p className="List__Item__Text">{text}</p>
         <input
+          tabIndex={0}
           id={`${name}__minutes`}
           name={`${name}__minutes`}
           className="List__Item__Input"
@@ -139,6 +162,7 @@ export function ListItem({
           onChange={onChangeMinutes}
           onKeyPress={onKeyPress}
           maxLength={4}
+          disabled={deleting}
         />
         <label
           htmlFor={`${name}__minutes`}
@@ -149,6 +173,7 @@ export function ListItem({
       </div>
       <button
         type="button"
+        tabIndex={rightActionsShown ? 0 : -1}
         className={`List__Item__Action List__Item__Action--submit ${rightActionsAnimationClass}`}
         onClick={() => completeItem()}
       >

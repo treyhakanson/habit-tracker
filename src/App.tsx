@@ -1,6 +1,5 @@
 import "./App.css";
 import { List } from "./List";
-import { exlpodeEmoji } from "./exploder";
 
 function App() {
   return (

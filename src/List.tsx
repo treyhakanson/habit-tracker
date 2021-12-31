@@ -41,6 +41,15 @@ export function List() {
     []
   );
 
+  const onDeleteItem = useCallback((text: string) => {
+    let localItems = JSON.parse(
+      localStorage.getItem("items") ?? "[]"
+    ) as Array<Item>;
+    const nextItems = localItems.filter((item) => item.text !== text);
+    localStorage.setItem("items", JSON.stringify(nextItems));
+    setItems(nextItems);
+  }, []);
+
   const allComplete = useMemo(() => {
     const incomplete = items.filter((item) => {
       if (item.lastCompletion == null) {
@@ -76,15 +85,25 @@ export function List() {
               className="IconButton"
               type="button"
               onClick={() => setMenuVisible(true)}
+              style={{ visibility: "hidden" }}
             >
               <Sliders color="var(--icon--primary)" size={18} />
             </button>
             <button
-              className="IconButton"
+              className={`IconButton List__DeleteAction ${
+                deleting ? "List__DeleteAction--active" : ""
+              }`}
               type="button"
               onClick={() => setDeleting(!deleting)}
             >
               <Trash2 color="var(--icon--primary)" size={18} />
+              <p
+                className={`List__DeleteAction__Text ${
+                  deleting ? "List__DeleteAction__Text--active" : ""
+                }`}
+              >
+                done
+              </p>
             </button>
           </div>
         </div>
@@ -93,9 +112,10 @@ export function List() {
         )}
         {items.map((item, i) => (
           <ListItem
-            key={i}
+            key={item.text}
             name={item.text.toLowerCase().replaceAll(/\s/g, "_")}
             onComplete={onCompleteItem}
+            onDelete={onDeleteItem}
             deleting={deleting}
             {...item}
           />

@@ -34,7 +34,7 @@ export function CreateListItem({ onCreate }: Props) {
       onCreate({ emoji, text: text.trim() });
       setItem("");
     },
-    [item]
+    [item, onCreate]
   );
 
   return (
