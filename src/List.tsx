@@ -48,6 +48,9 @@ export function List() {
     const nextItems = localItems.filter((item) => item.text !== text);
     localStorage.setItem("items", JSON.stringify(nextItems));
     setItems(nextItems);
+    if (nextItems.length === 0) {
+      setDeleting(false);
+    }
   }, []);
 
   const allComplete = useMemo(() => {
@@ -95,6 +98,7 @@ export function List() {
               }`}
               type="button"
               onClick={() => setDeleting(!deleting)}
+              disabled={items.length === 0}
             >
               <Trash2 color="var(--icon--primary)" size={18} />
               <p
