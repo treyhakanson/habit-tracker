@@ -157,6 +157,12 @@ body {
   width: 50px;
 }
 
+.List__Item__Input::-webkit-outer-spin-button,
+.List__Item__Input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .List__Item__Input::placeholder {
   color: var(--text-color--placeholder);
   opacity: 1;
@@ -164,10 +170,6 @@ body {
 
 .List__Item__InputPostfix::before {
   content: "\00a0";
-}
-
-.List__Item__Input:placeholder-shown + .List__Item__InputPostfix {
-  color: var(--text-color--placeholder);
 }
 
 .List__Item__Action--delete {
@@ -289,8 +291,13 @@ body {
   white-space: nowrap;
 }
 
+.List__Create__Form {
+  flex: 1;
+}
+
 .List__Create__Input {
-  flex-grow: 1;
+  margin: 0;
+  width: 100%;
   appearance: none;
   border: none;
   outline: none;
@@ -377,4 +384,36 @@ body {
 .List__DeleteAction__Text--active {
   width: 50px;
   opacity: 1;
+}
+
+.Menu__Content {
+  margin-bottom: 7px;
+}
+
+.Button {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.Button:hover {
+  cursor: pointer;
+}
+
+.Button__Icon {
+  margin-right: 8px;
+  margin-top: -2px;
+}
+
+.Button .Button__Text {
+  color: var(--icon--primary);
+}
+
+.Button.Button--negative .Button__Text {
+  color: var(--negative-color);
 }

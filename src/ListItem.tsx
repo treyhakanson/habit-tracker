@@ -151,22 +151,30 @@ export function ListItem({
         )}
         <p className="List__Item__Emoji">{emoji}</p>
         <p className="List__Item__Text">{text}</p>
-        <input
-          tabIndex={0}
-          id={`${name}__minutes`}
-          name={`${name}__minutes`}
-          className="List__Item__Input"
-          type="number"
-          placeholder="0"
-          value={minutes}
-          onChange={onChangeMinutes}
-          onKeyPress={onKeyPress}
-          maxLength={4}
-          disabled={deleting}
-        />
+        <form action="#" onSubmit={(e) => e.preventDefault()}>
+          <input
+            tabIndex={0}
+            id={`${name}__minutes`}
+            name={`${name}__minutes`}
+            className="List__Item__Input"
+            type="number"
+            inputMode="numeric"
+            enterKeyHint="done"
+            placeholder="0"
+            value={minutes}
+            onChange={onChangeMinutes}
+            onKeyPress={onKeyPress}
+            maxLength={4}
+            disabled={deleting}
+          />
+        </form>
         <label
           htmlFor={`${name}__minutes`}
           className="List__Item__InputPostfix"
+          style={{
+            color:
+              minutes === "" ? "var(--text-color--placeholder)" : undefined,
+          }}
         >
           {minutesPostfix}
         </label>

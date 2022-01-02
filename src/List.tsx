@@ -88,7 +88,6 @@ export function List() {
               className="IconButton"
               type="button"
               onClick={() => setMenuVisible(true)}
-              style={{ visibility: "hidden" }}
             >
               <Sliders color="var(--icon--primary)" size={18} />
             </button>
@@ -126,7 +125,11 @@ export function List() {
         ))}
         <CreateListItem onCreate={addItem} />
       </div>
-      <Menu visible={menuVisible} onHide={() => setMenuVisible(false)} />
+      <Menu
+        visible={menuVisible}
+        onHide={() => setMenuVisible(false)}
+        onClear={() => setItems([])}
+      />
     </>
   );
 }

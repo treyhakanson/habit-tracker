@@ -42,17 +42,24 @@ export function CreateListItem({ onCreate }: Props) {
       <label className="List__Create__InputLabel" htmlFor="list-create">
         I want to track...
       </label>
-      <input
-        id="list-create"
-        name="list-create"
-        className="List__Create__Input"
-        value={item}
-        placeholder="🤟 A New Hobby"
-        onChange={(e) => {
-          setItem(e.target.value);
-        }}
-        onKeyPress={onKeyPress}
-      />
+      <form
+        className="List__Create__Form"
+        action="#"
+        onSubmit={(e) => e.preventDefault()}
+      >
+        <input
+          id="list-create"
+          name="list-create"
+          className="List__Create__Input"
+          enterKeyHint="done"
+          value={item}
+          placeholder="🤟 A New Hobby"
+          onChange={(e) => {
+            setItem(e.target.value);
+          }}
+          onKeyPress={onKeyPress}
+        />
+      </form>
     </div>
   );
 }
